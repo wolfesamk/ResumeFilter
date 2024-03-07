@@ -66,6 +66,17 @@ def check():
     print('Checking for outdated Libraries')
     reqs = subprocess.check_output([sys.executable, '-m', 'pip', 'list','--outdated'])
     outdated_packages = [r.decode().split('==')[0] for r in reqs.split()]
+    for risk in range(8):
+        outdated_packages.pop(0)
+    temp_list = []
+    x=0
+    for risk in range(len(outdated_packages)):
+        if risk != x:
+            continue
+        temp_list.append[outdated_packages[x]]
+        x=x+4
+    outdated_packages = temp_list
+    print(outdated_packages)
     if len(outdated_packages) > 0:
         update(outdated_packages)
 def update(packages):
@@ -124,7 +135,7 @@ def historical(raw_packages):
     if len(diffs) > 0:
         for d in diffs:
             if d not in raw_packages:
-                raw_packages.append()
+                raw_packages.append(d)
     return raw_packages
 def exists(prep_packages):
     #checks to see if requested packages are already installed, then installs anyt that are not installed.
