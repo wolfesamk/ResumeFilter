@@ -7,7 +7,7 @@ cryptography,42.0.5
 cssselect,1.2.0
 lxml,5.1.0
 numpy,1.26.4
-pandas,2.2.1
+pandas,2.1.4
 pdfminer.six,20231228
 pdfquery,0.4.3
 pycparser,2.21

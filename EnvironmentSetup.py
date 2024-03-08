@@ -65,7 +65,10 @@ def check():
     #basic check for outdated libraries
     print('Checking for outdated Libraries')
     reqs = subprocess.check_output([sys.executable, '-m', 'pip', 'list','--outdated'])
-    outdated_packages = [r.decode().split('==')[0] for r in reqs.split()]
+    #outdated_packages = [r.decode().split('==')[0] for r in reqs.split('\\n')]
+    outdated_packages = [r.decode() for r in reqs.split()]
+    if len(outdated_packages) <= 0:
+        return
     for risk in range(8):
         outdated_packages.pop(0)
     temp_list = []
@@ -73,10 +76,9 @@ def check():
     for risk in range(len(outdated_packages)):
         if risk != x:
             continue
-        temp_list.append[outdated_packages[x]]
+        temp_list.append(outdated_packages[x])
         x=x+4
     outdated_packages = temp_list
-    print(outdated_packages)
     if len(outdated_packages) > 0:
         update(outdated_packages)
 def update(packages):
