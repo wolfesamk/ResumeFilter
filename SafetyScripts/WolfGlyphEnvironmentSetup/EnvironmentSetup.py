@@ -3,7 +3,8 @@
 ## TODO: Create function to load list of supplied libraries at desired version number. pip install --force-reinstall -v "MySQL_python==1.2.2" is the syntax I am looking for.
 
 ## list of non standard libraries required.
-extra_packages = ['numpy','pandas','pdfquery','tqdm','PyPDF2','pypdf']
+extra_packages = ['numpy','pandas','pdfquery','tqdm','PyPDF2','pypdf','spark-nlp','pyspark','google-cloud-language','google-cloud-api-keys']
+## NOTE: scikit-surprise == Microsoft Visual C++ 14.0 or greater is required. Get it with "Microsoft C++ Build Tools": https://visualstudio.microsoft.com/visual-cpp-build-tools/
 
 #### DO NOT EDIT BELOW THIS LINE ####
 
