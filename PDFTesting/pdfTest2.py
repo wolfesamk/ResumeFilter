@@ -1,20 +1,42 @@
 # importing required classes
 import os
 from pypdf import PdfReader
+
 indir = 'Files/JobApps'
-# creating a pdf reader object
+# # creating a pdf reader object
 reader = PdfReader(f'{indir}/swolfeResume.pdf')
 
-# printing number of pages in pdf file
-print(len(reader.pages))
+reader
 
-# creating a page object
-page1 = reader.pages[0].extract_text()
+pages = ''
+for p in range(len(reader.pages)):
+    pages = pages+reader.pages[p].extract_text(extraction_mode='layout')
+segmented = pages.split('\n')
+#print(segmented)
 
-# creating a page object
-page2 = reader.pages[1].extract_text()
+import pandas as pd
 
-swolfeResume = page1+page2
+# create example DataFrame
+df = pd.DataFrame({'lines': segmented})
 
-with open(f'{indir}/swolfeResume.txt','w') as file:
-    file.write(swolfeResume)
+# apply regular expression to remove white space from all strings in DataFrame
+df = df.replace(r'\s+', ' ', regex=True)
+df2 = []
+for x in df.index:
+    print(df.lines[x])
+    l = str(df.lines[x])
+    if len(l) < 1:
+        df2.append(l)
+        continue
+    first = l[0]
+    if first == ' ':
+        l2 = l[1:]
+        df2.append(l2)
+    if first == '•':
+        l2 = l[2:]
+        df2.append(l2)
+
+df2 = pd.DataFrame({'lines':df2})
+
+for r in df2.index:
+    print(df2.lines[r])
