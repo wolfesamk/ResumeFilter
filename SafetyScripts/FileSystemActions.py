@@ -1,11 +1,7 @@
 #File System script
-import sys
-import subprocess
 import os
-from os import system, name
-from time import sleep
-from datetime import datetime
-import pandas as pd
+import re
+import shutil
 
 def BaseCheckForCreate():
     requiredFiles = ['Files','Files\JobApps']
@@ -24,8 +20,6 @@ def BaseCheckForCreate():
     # hist_libs = lib_files[0]
 
 def CreateJobPost():
-    import re
-    import shutil
     BaseCheckForCreate()
     basedir = 'Files\JobApps'
     path = os.getcwd()

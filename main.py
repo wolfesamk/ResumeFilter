@@ -1,9 +1,7 @@
 #this is a test
-import pandas as pd
-from SafetyScripts.BaseKeywords import keywords
-from SafetyScripts.HandyFunctions import clear,wait,findPath
-from SafetyScripts.PDFResumeSplitter import readThisApp, readThisJob
-from SafetyScripts.FileSystemSetup import BaseCheckForCreate,CreateJobPost,MoveApplicant
+from SafetyScripts.HandyFunctions import clear
+from SafetyScripts.FileSystemActions import BaseCheckForCreate,CreateJobPost,MoveApplicant
+from SafetyScripts.Analytics import ApplicantImport, KeywordImport
 # from GoogleAPITesting.ContentClass import classify_text,show_text_classification
 clear()
 #resume = readThisApp('swolfeResume.pdf')
@@ -19,4 +17,5 @@ clear()
 
 BaseCheckForCreate()
 CreateJobPost()
-MoveApplicant('01002','resume_Wolfe_Samuel.pdf')
+df_applicants = ApplicantImport('01002')
+KeywordImport(jobID='01002',df_applicants=df_applicants)
