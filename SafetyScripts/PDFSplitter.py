@@ -39,44 +39,54 @@ def readThisApp(filename,jobID):
     #reducing paragraphs back to string and list format, cleaning up dataframe objects.
     resumeParagraphs = []
     temp = ''
-    for r in df.index:
-        line = df.lines[r]
-        print(line)
+    df2 = df
+    print(len(df2))
+    df2 = df2.lines.drop_duplicates(keep='first').to_frame()
+    print(len(df2))
+    list = df2.lines.to_list()
+    print(list)
+    
+    for r in df2.index:
+        line = df2.lines[r]
+        print(r)
+    # for r in df.index:
+    #     line = df.lines[r]
+    #     print(line)
 
-        #checks if line exists in temp
-        if line in temp and line !='':
-            print(line)
-            continue
-        #checks for empty line
-        if line == '':
-            #if line is empty checks for current last character
-            #else it adds a period.
-            if temp[len(temp)-1] in ['.']:
-                continue
-            elif df.lines[r+1] == '':
-                print('HERE')
-                print(line)
-                continue
-            else:
-                temp = temp +'.'
-            #because we are at the end of a paragraph, adding bar for split later.
-            temp = temp +'|'
-        #last element check
-        if r == 85:
-            print('PENIS')
-            print(len(df.index))
-            print(r)
-            print(line)
-            print(df.lines[r])
-        #if temp is blank, round one, temp is now set to new line.
-        # else temp is now temp plus a space and a line.
-        if temp == '':
-            temp = line
-        else:
-            temp = temp + ' ' + line
-    resumeParagraphs = temp.split('|')
-    for p in resumeParagraphs:
-        print(p)
+    #     #checks if line exists in temp
+    #     if line in temp and line !='':
+    #         print(line)
+    #         continue
+    #     #checks for empty line
+    #     if line == '':
+    #         #if line is empty checks for current last character
+    #         #else it adds a period.
+    #         if temp[len(temp)-1] in ['.']:
+    #             continue
+    #         elif df.lines[r+1] == '':
+    #             print('HERE')
+    #             print(line)
+    #             continue
+    #         else:
+    #             temp = temp +'.'
+    #         #because we are at the end of a paragraph, adding bar for split later.
+    #         temp = temp +'|'
+    #     #last element check
+    #     if r == 85:
+    #         print('PENIS')
+    #         print(len(df.index))
+    #         print(r)
+    #         print(line)
+    #         print(df.lines[r])
+    #     #if temp is blank, round one, temp is now set to new line.
+    #     # else temp is now temp plus a space and a line.
+    #     if temp == '':
+    #         temp = line
+    #     else:
+    #         temp = temp + ' ' + line
+    # resumeParagraphs = temp.split('|')
+    # for p in resumeParagraphs:
+    #     print(p)
     # for r in df.index:
         
     #     print('r='+str(r))
