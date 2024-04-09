@@ -1,75 +1,84 @@
 # This object will perform the primary analytics functions.
-# 1. Import Resume's and Cover Letters into dataframe
-# 2. Import keywords csv and count frequency for each applicant
+# 1. Import critical files for job_post, keywords, and resumes.
+# 2. Count keyword frequency for each applicant. preferred gets x2 score
 # 3. Run each applicant through Content Analysis, Entity Analysis, and Sentiment Analysis
 # 4. Run Applicants through scoring system
 # 5. Output one report with all details, one report with just candidates names, total score, and keyword score.
 
 import os
 import pandas as pd
-from SafetyScripts.PDFSplitter import readThisApp
-from SafetyScripts.FileSystemActions import MoveApplicant
+import math
 from SafetyScripts.HandyFunctions import CountOccurrences
-import re
+from SafetyScripts.FileSystemActions import ImportFiles
 #This function is part of element #1
-def ApplicantImport(jobID):
+def PrepImport(jobID):
+    # reads for RRS current path
     path = os.getcwd()
-    rawDir = path + '\\Files\JobApps' + '\\' + jobID + '\\' + 'Raw'
-    processedDir = path + '\\Files\JobApps' + '\\' + jobID + '\\' + 'Processed'
+    # creates jobID directory location
+    rawDir = path + '\\Files\JobApps' + '\\' + jobID
+    # looks for all files in dir
     files = os.listdir(rawDir)
-    df_applicants = pd.DataFrame(columns=['Name_First','Name_Last','Resume_Raw','Resume_Raw_Seg'])
-    temp_names_first = []
-    temp_names_last = []
-    temp_resume_raw_seg = []
-    temp_resume_raw = ''
+    # looks for critical files
     for f in files:
-        names = f.split('.')[0].split('_')[1:]
-        temp_names_last.append(names[0])
-        temp_names_first.append(names[1])
-        temp_resume_raw_seg.append(readThisApp(f,jobID))
-        for seg in temp_resume_raw_seg[0]:
-            if temp_resume_raw == '':
-                temp_resume_raw = seg
-            else:
-                temp_resume_raw = temp_resume_raw + ' '+ seg
-        ####MoveApplicant(jobID,f)
-    df_applicants['Name_First'] = temp_names_first
-    df_applicants['Name_Last'] = temp_names_last
-    df_applicants['Resume_Raw'] = temp_resume_raw
-    df_applicants['Resume_Raw_Seg'] = temp_resume_raw_seg
-    return df_applicants
-
-# This is element 2
-def KeywordImport(jobID,df_applicants):
-    path = os.getcwd()
-    path = path  + '\\Files\JobApps' + '\\' + jobID
-    files = os.listdir(path)
-    for f in files:
+        if 'job_post' in f:
+            dfJobpost = ImportFiles(f, rawDir)
         if 'keywords' in f:
-            files = f
-        else:
-            continue
-    df_keywords = pd.read_csv(path+'\\'+files)
-    keywords_min = df_keywords['minimum'].to_list()
-    keywords_max = df_keywords['preferred'].dropna().to_list()
-    for i in df_applicants.index:
-        text = df_applicants['Resume_Raw'].loc[i]
-        text = re.sub(r'\W', ' ', text)
-        pattern = re.compile(r'\s+')
-        text = re.sub(pattern,' ',text)
-        text = text.lower()
-        # print(text)#
+            dfKeywords = ImportFiles(f, rawDir)
+        if 'resumes' in f:
+            dfApplicants = ImportFiles(f, rawDir)
+    # returns dataframes of critical info
+    return dfJobpost,dfKeywords,dfApplicants
 
+def ScoreKeeper(dfApplicants,jobID):
+    # creates scorekeeper dataframe. Separate for now for ease of scoring.
+    dfScoreKeeper = pd.DataFrame()
+    # filling out dataframe with all applicants
+    dfScoreKeeper['candidate_id'] = dfApplicants['candidate_id']
+    # adding jobID for easier reference later if I decide to merge ScoreKeeper into one file.
+    dfScoreKeeper['jobPost'] = jobID
+    # returns scorekeeper dataframe
+    return dfScoreKeeper
+
+def KeywordCounter(dfApplicants, dfKeywords, dfScoreKeeper):
+    # Function creates and populates new column, score_keyword.
+    
+    # The known ATS columns for use with Raw Text.
+    raw_text_cols = ['personal_1','personal_2','personal_3','technical','job_1','job_2','job_3','job_4','education','skills']
+    
+    # creating local defaults
+    mini_count_total = 0
+    maxi_count_total = 0
+    
+    #creating empty list to save each candidate
+    totals =[]
+    for r in dfApplicants.index:
+        mini_count_total = 0
+        maxi_count_total = 0
         count_total = 0
-        count_min = 0
-        count_max = 0
-        for word in keywords_min:
-            word = word.lower()
-            count_min = count_min+CountOccurrences(text,word)
-        for word in keywords_max:
-            word = word.lower()
-            count_max = count_max+CountOccurrences(text, word)
-        count_total = count_min + count_max
-        print(count_min)
-        print(count_max)
+        for t in raw_text_cols:
+            raw_text = dfApplicants[t][r]
+            try:
+                if math.isnan(raw_text) is True:
+                    continue
+            except:
+                for q in dfKeywords.index:
+                    mini = dfKeywords.minimum[q]
+                    try:
+                        if math.isnan(mini) is True:
+                            mini_count = 0
+                    except:
+                        mini_count = CountOccurrences(raw_text,mini)
+                    mini_count_total = mini_count_total + mini_count
+                    
+                    maxi = dfKeywords.preferred[q]
+                    try:
+                        if math.isnan(maxi) is True:
+                            maxi_count = 0
+                    except:
+                        maxi_count = CountOccurrences(raw_text,maxi) * 2
+                    maxi_count_total = maxi_count_total + maxi_count
+        count_total = mini_count_total + maxi_count_total
         print(count_total)
+        totals.append(count_total)
+    dfScoreKeeper['score_keyword'] = totals
+    return dfScoreKeeper

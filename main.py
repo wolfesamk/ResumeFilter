@@ -1,7 +1,7 @@
 #this is a test
 from SafetyScripts.HandyFunctions import clear
-from SafetyScripts.FileSystemActions import BaseCheckForCreate,CreateJobPost,MoveApplicant
-from SafetyScripts.Analytics import ApplicantImport, KeywordImport
+from SafetyScripts.FileSystemActions import BaseCheckForCreate,CreateJobPost
+from SafetyScripts.Analytics import PrepImport, ScoreKeeper, KeywordCounter
 # from GoogleAPITesting.ContentClass import classify_text,show_text_classification
 clear()
 #resume = readThisApp('swolfeResume.pdf')
@@ -17,5 +17,8 @@ clear()
 
 BaseCheckForCreate()
 CreateJobPost()
-df_applicants = ApplicantImport('01002')
-KeywordImport(jobID='01002',df_applicants=df_applicants)
+jobID = '01002'
+dfJobpost,dfKeywords,dfApplicants = PrepImport(jobID)
+dfScoreKeeper = ScoreKeeper(dfApplicants,jobID)
+dfScoreKeeper = KeywordCounter(dfApplicants, dfKeywords,dfScoreKeeper)
+print(dfScoreKeeper)

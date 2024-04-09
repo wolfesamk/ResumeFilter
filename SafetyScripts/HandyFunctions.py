@@ -24,13 +24,19 @@ def findPath():
     return os.getcwd()
 
 def CountOccurrences(str, word):
-    # split the string by spaces in a
+    import re
+    
+    str = re.sub('[^A-Za-z ]','', str)
+    str = str.lower()
+    word = re.sub('[^A-Za-z ]','', word)
+    #word = re.sub('[.]','', word)
+    word = word.lower()
+    # split the string by spaces
     a = str.split(" ")
- 
+
     # search for pattern in a
     count = 0
     for i in range(0, len(a)):
-         
         # if match found increase count 
         if (word == a[i]):
            count = count + 1
