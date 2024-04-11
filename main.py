@@ -1,7 +1,7 @@
 #this is a test
 from SafetyScripts.HandyFunctions import clear
 from SafetyScripts.FileSystemActions import BaseCheckForCreate,CreateJobPost
-from SafetyScripts.Analytics import PrepImport, ScoreKeeper, KeywordCounter
+from SafetyScripts.Analytics import PrepImport, ScoreKeeper, KeywordCounter, GoogleNER, GoogleJob
 # from GoogleAPITesting.ContentClass import classify_text,show_text_classification
 clear()
 #resume = readThisApp('swolfeResume.pdf')
@@ -17,8 +17,11 @@ clear()
 
 BaseCheckForCreate()
 CreateJobPost()
-jobID = '01002'
+jobID = '1002'
 dfJobpost,dfKeywords,dfApplicants = PrepImport(jobID)
 dfScoreKeeper = ScoreKeeper(dfApplicants,jobID)
 dfScoreKeeper = KeywordCounter(dfApplicants, dfKeywords,dfScoreKeeper)
+dfJobpost = GoogleJob(dfJobpost)
+print(dfJobpost)
+#dfScoreKeeper = GoogleNER(dfApplicants, dfScoreKeeper)
 print(dfScoreKeeper)

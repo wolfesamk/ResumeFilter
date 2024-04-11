@@ -1,7 +1,9 @@
 ## need to have gcloud CLI installed to run
+# https://codelabs.developers.google.com/codelabs/cloud-natural-language-python3#0
 ## must pip install tabulate
 # importing required classes
 from google.cloud import language_v2 as language
+from google.cloud import storage
 import pandas as pd
 def authenticate_implicit_with_adc(project_id="resumefilter"):
     """
@@ -17,7 +19,7 @@ def authenticate_implicit_with_adc(project_id="resumefilter"):
     Args:
         project_id: The project id of your Google Cloud project.
     """
-
+    # pip install --upgrade google-cloud-storage
     # This snippet demonstrates how to list buckets.
     # *NOTE*: Replace the client created below with the client required for your application.
     # Note that the credentials are not specified when constructing the client.
@@ -37,14 +39,18 @@ def classify_text(text: str) -> language.ClassifyTextResponse:
     )
     return client.classify_text(document=document)
 
-def show_text_classification(text: str, response: language.ClassifyTextResponse):
+def show_text_classification(response: language.ClassifyTextResponse):
     columns = ["category", "confidence"]
     data = ((category.name, category.confidence) for category in response.categories)
     df = pd.DataFrame(columns=columns, data=data)
-
+    # text: str, 
     #print(f"Text analyzed:\n{text}")
     #print(df.to_markdown(index=False, tablefmt="presto", floatfmt=".0%"))
     return df
+
+def text_classification(raw_text):
+    response = classify_text(raw_text)
+    return show_text_classification(response)
 
 def analyze_text_entities(text: str) -> language.AnalyzeEntitiesResponse:
     client = language.LanguageServiceClient()
@@ -69,4 +75,34 @@ def show_text_entities(response: language.AnalyzeEntitiesResponse):
         for entity in response.entities
     )
     df = pd.DataFrame(columns=columns, data=data)
+    return df
     # print(df.to_markdown(index=False, tablefmt="presto", floatfmt=".0%"))
+
+def entity_analysis(raw_text):
+    response = analyze_text_entities(raw_text)
+    return show_text_entities(response)
+
+def analyze_text_sentiment(text: str) -> language.AnalyzeSentimentResponse:
+    client = language.LanguageServiceClient()
+    document = language.Document(
+        content=text,
+        type_=language.Document.Type.PLAIN_TEXT,
+    )
+    return client.analyze_sentiment(document=document)
+
+def show_text_sentiment(response: language.AnalyzeSentimentResponse):
+    import pandas as pd
+
+    columns = ["score", "sentence"]
+    data = [(s.sentiment.score, s.text.content) for s in response.sentences]
+    df_sentence = pd.DataFrame(columns=columns, data=data)
+
+    sentiment = response.document_sentiment
+    columns = ["score", "magnitude", "language"]
+    data = [(sentiment.score, sentiment.magnitude, response.language)]
+    df_document = pd.DataFrame(columns=columns, data=data)
+    return df_document
+
+def sentiment_analysis(raw_text):
+    response = analyze_text_sentiment(raw_text)
+    return show_text_sentiment(response)
