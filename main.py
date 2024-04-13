@@ -1,19 +1,11 @@
 #this is a test
 from SafetyScripts.HandyFunctions import clear
 from SafetyScripts.FileSystemActions import BaseCheckForCreate,CreateJobPost
-from SafetyScripts.Analytics import PrepImport, ScoreKeeper, KeywordCounter, GoogleNER, GoogleJob
-# from GoogleAPITesting.ContentClass import classify_text,show_text_classification
+from SafetyScripts.Analytics import PrepImport, ScoreKeeper, KeywordCounter, NERScoring, GoogleJob, SubScoring
+from SafetyScripts.Match import Game
+import os
+import pandas as pd
 clear()
-#resume = readThisApp('swolfeResume.pdf')
-#jobpost = readThisJob('jobPost_01002.pdf')
-# dict = {'category':[],'confidence':[],'paragraph':[]}
-# df_resume = pd.DataFrame(dict)
-# for x in resume:
-#     x_response = classify_text(x)
-#     temp_df = show_text_classification(x,x_response)
-#     temp_df['paragraph'] = x
-#     df_resume = pd.concat([df_resume,temp_df],ignore_index=True)
-# print(df_resume)
 
 BaseCheckForCreate()
 CreateJobPost()
@@ -21,7 +13,21 @@ jobID = '1002'
 dfJobpost,dfKeywords,dfApplicants = PrepImport(jobID)
 dfScoreKeeper = ScoreKeeper(dfApplicants,jobID)
 dfScoreKeeper = KeywordCounter(dfApplicants, dfKeywords,dfScoreKeeper)
-dfJobpost = GoogleJob(dfJobpost)
-print(dfJobpost)
-#dfScoreKeeper = GoogleNER(dfApplicants, dfScoreKeeper)
-print(dfScoreKeeper)
+
+# commented out to save on API calls
+# GoogleJob(dfJobpost)
+
+# dfScoreKeeper = NERScoring(jobID, dfApplicants, dfScoreKeeper)
+# clear()
+# the following 3 lines are temporary during testing
+# reads for RRS current path
+path = os.getcwd()
+# creates jobID directory location
+rawDir = path + '\\Files\\JobApps' + '\\' + str(jobID)
+dfScoreKeeper = pd.read_csv(rawDir+'\\dfScoreKeeper_'+jobID+'.csv')
+
+clear()
+dfScoreKeeper, dfScoreKeeper_Scaled = SubScoring(jobID, dfJobpost, dfApplicants, dfScoreKeeper)
+clear()
+dfScoreKeeper_Scaled = Game(dfScoreKeeper_Scaled)
+print(dfScoreKeeper_Scaled)

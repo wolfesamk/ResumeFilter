@@ -1,8 +1,10 @@
 ## need to have gcloud CLI installed to run
 # https://codelabs.developers.google.com/codelabs/cloud-natural-language-python3#0
+# https://cloud.google.com/python/docs/reference/language/latest/google.cloud.language_v2.types.EntityMention
 ## must pip install tabulate
 # importing required classes
 from google.cloud import language_v2 as language
+from google.cloud import language as language_v1
 from google.cloud import storage
 import pandas as pd
 def authenticate_implicit_with_adc(project_id="resumefilter"):
@@ -52,31 +54,31 @@ def text_classification(raw_text):
     response = classify_text(raw_text)
     return show_text_classification(response)
 
-def analyze_text_entities(text: str) -> language.AnalyzeEntitiesResponse:
-    client = language.LanguageServiceClient()
-    document = language.Document(
+def analyze_text_entities(text: str) -> language_v1.AnalyzeEntitiesResponse:
+    client = language_v1.LanguageServiceClient()
+    document = language_v1.Document(
         content=text,
-        type_=language.Document.Type.PLAIN_TEXT,
+        type_=language_v1.Document.Type.PLAIN_TEXT,
     )
     return client.analyze_entities(document=document)
 
-def show_text_entities(response: language.AnalyzeEntitiesResponse):
+def show_text_entities(response: language_v1.AnalyzeEntitiesResponse):
     import pandas as pd
 
-    columns = ("name", "type", "salience", "mid", "wikipedia_url")
+    columns = ("name", "type", "salience", "wikipedia_url")
     data = (
         (
             entity.name,
             entity.type_.name,
             entity.salience,
-            entity.metadata.get("mid", ""),
             entity.metadata.get("wikipedia_url", ""),
         )
         for entity in response.entities
     )
     df = pd.DataFrame(columns=columns, data=data)
+    df = df[df.type != 'NUMBER']
+    df = df[df.type != 'DATE']
     return df
-    # print(df.to_markdown(index=False, tablefmt="presto", floatfmt=".0%"))
 
 def entity_analysis(raw_text):
     response = analyze_text_entities(raw_text)
@@ -98,8 +100,8 @@ def show_text_sentiment(response: language.AnalyzeSentimentResponse):
     df_sentence = pd.DataFrame(columns=columns, data=data)
 
     sentiment = response.document_sentiment
-    columns = ["score", "magnitude", "language"]
-    data = [(sentiment.score, sentiment.magnitude, response.language)]
+    columns = ["score", "magnitude"]
+    data = [(sentiment.score, sentiment.magnitude)]
     df_document = pd.DataFrame(columns=columns, data=data)
     return df_document
 
