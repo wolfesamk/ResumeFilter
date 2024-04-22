@@ -417,12 +417,14 @@ def SubScoring(jobID, dfJobpost, dfApplicants, dfScoreKeeper):
     # adding new columns to scorekeeper
     dfScoreKeeper['score_months'] = score_months
     dfScoreKeeper['score_relocation'] = score_relocation
-    dfScoreKeeper['score_pay'] = score_pay
+    # dfScoreKeeper['score_pay'] = score_pay
+    dfScoreKeeper['score_pay'] = dfApplicants['pay_desired']
+    dfScoreKeeper['score_education'] = dfApplicants['education_highest']
     
     # normalizing score columns
     
     # separating columns that need to be normalized vs those that do not
-    scorings = ['score_keyword', 'score_classification', 'score_entity', 'score_sentiment', 'score_months', 'score_pay']
+    scorings = ['score_keyword', 'score_classification', 'score_entity', 'score_sentiment', 'score_months', 'score_pay','score_education']
     labels = ['jobPost','candidate_id', 'score_relocation']
     x = dfScoreKeeper[scorings]
     y = dfScoreKeeper[labels]
