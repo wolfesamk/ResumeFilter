@@ -20,7 +20,7 @@ def PrepImport(jobID):
     # reads for RRS current path
     path = os.getcwd()
     # creates jobID directory location
-    rawDir = path + '\\Files\JobApps' + '\\' + jobID
+    rawDir = path + '\\Files\\JobApps' + '\\' + jobID
     # looks for all files in dir
     files = os.listdir(rawDir)
     # looks for critical files
@@ -128,7 +128,7 @@ def GoogleJob(dfJobpost):
     # reads for RRS current path
     path = os.getcwd()
     # creates jobID directory location
-    rawDir = path + '\\Files\JobApps' + '\\' + str(dfJobpost['jobID'][0])
+    rawDir = path + '\\Files\\JobApps' + '\\' + str(dfJobpost['jobID'][0])
     # these are the key columns for the job post file
     key_text_cols = ['job_summary', 'work_environment', 'required', 'preferred']
     jobID = str(dfJobpost['jobID'][0])
@@ -223,7 +223,7 @@ def NERScoring(jobID, dfApplicants, dfScoreKeeper):
     # reads for RRS current path
     path = os.getcwd()
     # creates jobID directory location
-    rawDir = path + '\\Files\JobApps' + '\\' + str(jobID)
+    rawDir = path + '\\Files\\JobApps' + '\\' + str(jobID)
     
     # loading saved jobPost elements
     practice1 = rawDir+'\\df_classification_'+jobID+'.csv'
@@ -358,7 +358,7 @@ def SubScoring(jobID, dfJobpost, dfApplicants, dfScoreKeeper):
     # reads for RRS current path
     path = os.getcwd()
     # creates jobID directory location
-    rawDir = path + '\\Files\JobApps' + '\\' + str(jobID)
+    rawDir = path + '\\Files\\JobApps' + '\\' + str(jobID)
 
     # creating score lists
     score_months = []

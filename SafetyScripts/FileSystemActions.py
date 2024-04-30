@@ -9,11 +9,12 @@ from SafetyScripts.HandyFunctions import clear, wait
 
 def BaseCheckForCreate():
     # this function checks for and creates the Files and JobApps folders.
-    # list of required folders for initial startup.
     clear()
     print('Checking for required base File System Structure.')
     wait(2)
-    requiredFiles = ['Files','Files\JobApps']
+
+    # list of required folders for initial startup.
+    requiredFiles = ['Files','Files\\JobApps']
 
     # for loop that iterates through requiredFiles list. If folder is not found, creates dir
     for outdir in requiredFiles:
@@ -29,7 +30,6 @@ def BaseCheckForCreate():
     wait(4)
     clear()
 
-
 def CreateJobPost():
     # this function creates individual job post based on files within sub folder JobApps per jobID
 
@@ -39,8 +39,10 @@ def CreateJobPost():
     clear()
 
     print('Creating Job Post File System Structure')
+    wait(2)
+
     # creating base directory reference
-    basedir = 'Files\JobApps'
+    basedir = 'Files\\JobApps'
     # finding local path
     path = os.getcwd()
     # combining basedir and path for local base dir
@@ -60,6 +62,9 @@ def CreateJobPost():
 
     # if there are no jobs to import end function early.
     if len(jobIDList) < 1:
+        print('No new job posts, returning to main menu.')
+        wait(3)
+        clear()
         return
 
     # for loop to create jobID and move files associated with jobPost
@@ -75,11 +80,26 @@ def CreateJobPost():
         jobPost = 'jobPost_'+jobID+'.csv'
         keyWords = 'keywords_'+jobID+'.csv'
         resumes = 'resumes_'+jobID+'.csv'
+        if keyWords not in files:
+            print('Keywords file missing for jobID',jobID,'. Returning to main menu.')
+            wait(3)
+            clear()
+            return
+        if resumes not in files:
+            print('Resumes file missing for jobID',jobID,'. Returning to main menu.')
+            wait(3)
+            clear()
+            return
 
         # moving critical files for this jobID to JobID subfolder
         shutil.move(path+'\\'+basedir+'\\'+jobPost,outdir+'\\'+jobPost)
         shutil.move(path+'\\'+basedir+'\\'+keyWords,outdir+'\\'+keyWords)
         shutil.move(path+'\\'+basedir+'\\'+resumes,outdir+'\\'+resumes)
+
+        print('The jobID',jobID,'has been processed.')
+        wait(2)
+    print('All new Job Posts have been processed. Returning to main menu.')
+    wait(3)
 
 def ImportFiles(file,baseDir):
     # this function is for importing critical files as dataframes.

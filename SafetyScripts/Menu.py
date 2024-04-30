@@ -143,8 +143,6 @@ def case1():
     # end of case1
     print('All files have been saved to:',rawDir,'\n')
 
-
-
 def menu_case(inp,menu):
     # this function is a simple match case system to process the menu input
     menu_item = menu[int(inp)-1]
@@ -160,7 +158,6 @@ def menu_case(inp,menu):
         case 2:
             truth = input_checker2(menu_item)
             if truth is True:
-                BaseCheckForCreate()
                 CreateJobPost()
             elif truth is False:
                 return
@@ -190,7 +187,7 @@ def main_menu(menu):
     first_time = 0
 
     # header text
-    header = ['---WolfGlyph Resume Scoring System---','Please select from the following operations']
+    header = ['---WolfGlyph Resume Recommendation System---','Please select from the following operations']
     # while loop to simulate program running. exits upon having the menu length entered.
     while menu_input != exit_num:
 
